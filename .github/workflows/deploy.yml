@@ -1,0 +1,114 @@
+# =====================================================================
+# 🌐 ZeaWorld OmniChain Universe / Zea Token ($ZEA)
+# 📦 Version: 1.0.0 — Build Stable Main WorldChain and Multi-Chain
+# 👨‍💻 Developer: PHIPHAT PHOEMSUK (ZeaZDev)
+# 🏢 Organization: ZeaZDev — Innovate • Connect • Grow
+# 🌍 Website: https://zeaz.dev
+# 📧 Contact: admin@zeaz.dev, support@zeaz.dev
+# 🔐 License: MIT
+# =====================================================================
+# GitHub Actions Workflow: Deploy ZeaWorld Smart Contracts
+# ---------------------------------------------------------------------
+# Features:
+# - Auto setup Foundry toolchain
+# - Compile + test Solidity contracts
+# - Deploy to WorldChain (or any chain via RPC)
+# - Verify via Etherscan API v2
+# - Save logs as artifacts
+# =====================================================================
+
+name: 🚀 Deploy ZeaWorldChain Smart Contracts
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  WORLDCHAIN_RPC: ${{ secrets.WORLDCHAIN_RPC }}
+  PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  WORLD_ID_ROUTER: ${{ secrets.WORLD_ID_ROUTER }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  FOUNDRY_PROFILE: release
+
+jobs:
+  deploy:
+    name: 🧠 Deploy Smart Contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 🧱 Setup Foundry toolchain
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: 🔧 Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq python3 python3-pip
+          pip install eth_account
+          forge --version
+          cast --version
+
+      - name: 🧠 Build & Test
+        run: |
+          echo "⚙️ Building contracts..."
+          forge build
+          echo "🧪 Running tests..."
+          forge test -vvv
+
+      - name: 🌍 Deploy to WorldChain RPC
+        run: |
+          echo "🚀 Starting deployment to ${WORLDCHAIN_RPC}"
+          forge script script/Deploy.s.sol:Deploy             --rpc-url $WORLDCHAIN_RPC             --private-key $PRIVATE_KEY             --broadcast             --verify             --etherscan-api-key $ETHERSCAN_API_KEY             --skip-simulation
+        continue-on-error: false
+
+      - name: 🔏 Sign Deployment Ownership
+        run: |
+          echo "🧠 Signing message with Python (via eth_account)..."
+          python3 - <<'PYCODE'
+from eth_account import Account
+from eth_account.messages import encode_defunct
+import os, json, time
+
+pk = os.environ.get("PRIVATE_KEY")
+if not pk:
+    raise SystemExit("❌ Missing PRIVATE_KEY in secrets")
+
+acct = Account.from_key(pk)
+msg = f"ZeaWorld Deployment Ownership Verification - {int(time.time())}"
+message = encode_defunct(text=msg)
+signed = Account.sign_message(message, private_key=pk)
+
+data = {
+    "address": acct.address,
+    "message": msg,
+    "signature": signed.signature.hex()
+}
+
+with open("deployment_signature.json", "w") as f:
+    json.dump(data, f, indent=2)
+print("✅ Signed ownership message for", acct.address)
+PYCODE
+
+      - name: 📜 Upload deployment logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-logs
+          path: |
+            broadcast/
+            deployment_signature.json
+          retention-days: 30
+
+      - name: ✅ Deployment Summary
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "🪐 Contract verified via Etherscan API v2"
+          echo "🔗 Logs saved as artifacts"
