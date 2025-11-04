@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ZeaZDev-AI-Secure-v5.3.sh
-# ZeaZDev v5.3 — Multi-Node Cluster Deploy + Etherscan V2 Verify + Dashboard + WebSocket
+# ZeaZDev-Release-v5.2.sh
+# ZeaZDev v5.2 — Multi-Node Cluster Deploy + Etherscan V2 Verify + Dashboard + WebSocket
 # One-file installer: creates project under INSTALL_PATH (default /opt/ZeaZDev)
 # Usage: provide env vars non-interactively or run interactively when prompted.
 set -euo pipefail
@@ -82,7 +82,7 @@ IFS=',' read -r -a PAIRS <<< "$MULTI_RPC_LIST"
 
 # prepare .env.EXAMPLE
 cat > "$INSTALL_PATH/.env.EXAMPLE" <<EOF
-# Example .env for ZeaZDev v5.3
+# Example .env for ZeaZDev v5.2
 MULTI_RPC_LIST=$MULTI_RPC_LIST
 WORLD_APP_ID=$WORLD_APP_ID
 PRIVATE_KEY=$PRIVATE_KEY
@@ -140,7 +140,7 @@ dotenvConfig();
 
 const { RPC_URL, PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
 
-// customChains (Etherscan V2-style mapping) - full mapping referenced in v5.3
+// customChains (Etherscan V2-style mapping) - full mapping referenced in v5.2
 const customChains = [
   { network: "sepolia", chainId: 11155111, urls: { apiURL: "https://api-sepolia.etherscan.io/api", browserURL: "https://sepolia.etherscan.io" } },
   { network: "mainnet", chainId: 1, urls: { apiURL: "https://api.etherscan.io/api", browserURL: "https://etherscan.io" } },
@@ -492,7 +492,7 @@ info "Starting dashboard server (background)"
 ### =============== Git push deploy logs if configured ===============
 info "Preparing deploy logs..."
 LOGFILE="$LOG_DIR/deploy-$(date -u +%Y%m%dT%H%M%SZ).log"
-echo "ZeaZDev v5.3 Deploy Logs - $(date -u)" > "$LOGFILE"
+echo "ZeaZDev v5.2 Deploy Logs - $(date -u)" > "$LOGFILE"
 for f in "$RESULTS_DIR"/*.json; do echo "---- $f ----" >> "$LOGFILE"; cat "$f" >> "$LOGFILE"; echo >> "$LOGFILE"; done
 for f in "$LOG_DIR"/*.log; do echo "---- $f ----" >> "$LOGFILE"; tail -n 400 "$f" >> "$LOGFILE"; echo >> "$LOGFILE"; done
 
@@ -514,7 +514,7 @@ fi
 
 ### =============== Telegram notify summary ===============
 if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-  MSG="✅ ZeaZDev v5.3 Multi-Deploy finished.\n"
+  MSG="✅ ZeaZDev v5.2 Multi-Deploy finished.\n"
   for f in "$RESULTS_DIR"/*.json; do
     n=$(jq -r .network "$f"); t=$(jq -r .token "$f"); a=$(jq -r .airdrop "$f")
     MSG="${MSG}\n${n}\n Token: ${t}\n Airdrop: ${a}\n"
@@ -571,7 +571,7 @@ info "Parcel frontend started (pid $(cat /tmp/zeadev_parcel.pid 2>/dev/null || e
   done
 ) &
 
-info "ZeaZDev v5.3 completed. Dashboard: http://<server-ip>:3000 (served by $INSTALL_PATH/server.js)"
+info "ZeaZDev v5.2 completed. Dashboard: http://<server-ip>:3000 (served by $INSTALL_PATH/server.js)"
 info "Results placed in: $RESULTS_DIR; Logs: $LOG_DIR; Backups: $BACKUP_DIR"
 info "If running in Docker, bind mount $INSTALL_PATH to persist results/logs."
 
