@@ -1,0 +1,19 @@
+# -----------------------------------------------------------------------------
+# ZeaZDev-Release-v5.4.sh
+# ZeaZDev — Multi-Node Cluster Deploy + Etherscan V2 Verify + Dashboard + WebSocket
+# Version: v5.4 (MemorySafe + HardhatLocalFix + Git Push Enhancements)
+# Developer: PHIPHAT PHOEMSUK (ZeaZDev)
+# Organization: ZeaZDev — Ecosystem • Innovate • Connect • Grow
+# Website: https://app.zeaz.dev/
+# Contact: admin@zeaz.dev, support@zeaz.dev
+# License: MIT
+# -----------------------------------------------------------------------------
+🔧 การอธิบายการแก้ไข (Patch Summary — v5.3 → v5.4)
+✅ MemorySafe concurrency limiter — ลดปริมาณ npm install / compile ที่ทำพร้อมกันโดยตั้งค่า MAX_PARALLEL (default 2) เพื่อป้องกัน OOM kill จากการรันหลาย job พร้อมกัน
+✅ Local Hardhat auto-install per workspace — ก่อนรัน compile จะตรวจว่ามี node_modules/hardhat หรือไม่ หากไม่มีก็ npm install --save-dev hardhat@... (แก้ปัญหา HHE22)
+✅ NPM cache reuse — ตั้ง npm_config_cache ไปยัง $INSTALL_PATH/.npm-cache เพื่อประหยัดดาวน์โหลดซ้ำ
+✅ Swap auto-create — ถ้าหน่วยความจำระบบต่ำกว่าค่า MIN_RAM_MB จะสร้าง swap file 2GB อัตโนมัติ (configurable)
+✅ Compile retry & auto-heal plugins — หาก compile ล้มเหลวจะพยายามติดตั้ง plugin ที่ขาดและ retry 3 ครั้ง
+✅ Git push logs with token sanitization — ยอมรับ GIT_LOG_REPO ที่รวม PAT แต่ปรับแสดง ***TOKEN*** ใน log เพื่อไม่ให้ token ปรากฏ
+✅ Telegram summary — แจ้งผลสรุปของทุก network ที่ deploy เสร็จ
+✅ Dashboard + Parcel Frontend — server.js (Express+WS) และ static UI พร้อม health monitor และ auto-restart frontend
