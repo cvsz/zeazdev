@@ -42,7 +42,7 @@ fi
 # ====== WorldID Router fetch ======
 info "Fetching WorldID Router address..."
 WORLD_ROUTER=$(curl -fsS https://raw.githubusercontent.com/worldcoin/world-id/main/deployments.json 2>/dev/null | grep -Eo "0x[0-9a-fA-F]{40}" | head -n1 || true)
-WORLD_ROUTER=${WORLD_ROUTER:-0x7a5b8bC49D4D17a1aDe87E4E3fCB86B1fFb3D545}
+WORLD_ROUTER=${WORLD_ROUTER:-0x57f928158C3EE7CDad1e4D8642503c4D0201f611}
 info "WorldID Router set to: $WORLD_ROUTER"
 
 # ====== Environment setup ======
