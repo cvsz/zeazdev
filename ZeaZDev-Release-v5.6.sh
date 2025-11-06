@@ -20,6 +20,8 @@ err(){ echo -e "${RED}[ERROR]${RESET} $*"; }
 
 # Defaults & paths
 INSTALL_PATH="${INSTALL_PATH:-/opt/ZeaZDev}"
+# Contact email for Let's Encrypt. Override via export EMAIL=admin@example.com if needed.
+EMAIL="${EMAIL:-admin@zeaz.dev}"
 PROJECT_PATH="$INSTALL_PATH/Project"
 FRONT_PATH="$INSTALL_PATH/Frontend"
 DASH_PATH="$INSTALL_PATH/Dashboard"
@@ -77,7 +79,10 @@ if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
   warn "node/npm not found. Attempting to install node (curl + setup) for Debian/Ubuntu..."
   # Only attempt apt-based install (common VPS). User can skip if using other OS.
   if command -v apt-get >/dev/null 2>&1; then
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - || true
+    TMP_NODE_SETUP="$(mktemp)"
+    curl -fsSL https://deb.nodesource.com/setup_18.x -o "$TMP_NODE_SETUP" || { err "Failed to download NodeSource setup script"; exit 1; }
+    bash "$TMP_NODE_SETUP" || { err "Failed to execute NodeSource setup script"; exit 1; }
+    rm -f "$TMP_NODE_SETUP"
     apt-get update -y && apt-get install -y nodejs build-essential || true
   else
     warn "Manual install required for node/npm on your OS."
@@ -160,7 +165,7 @@ request_ssl(){
   fi
   info "Requesting Let's Encrypt certificate for: $domain"
   # non-interactive; uses webroot via nginx plugin
-  certbot --nginx -d "$domain" --redirect --non-interactive --agree-tos -m "admin@${domain#*.}" || {
+  certbot --nginx -d "$domain" --redirect --non-interactive --agree-tos -m "$EMAIL" || {
     warn "certbot run failed for $domain"
     return 1
   }
@@ -173,27 +178,6 @@ request_ssl(){
 # -----------------------
 create_systemd_services(){
   info "Creating systemd services for ZeaZDev dashboard and frontend"
-
-  # Dashboard service: runs node server.js (assumes $INSTALL_PATH/server.js exists)
-  cat > /etc/systemd/system/zeazdev-dashboard.service <<'UNIT'
-[Unit]
-Description=ZeaZDev Dashboard (Node server)
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/ZeaZDev
-ExecStart=/usr/bin/node server.js
-Restart=on-failure
-RestartSec=5
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=zeazdev-dashboard
-
-[Install]
-WantedBy=multi-user.target
-UNIT
 
   # Frontend service: run parcel dev server (assumes package.json scripts prepared)
   cat > /etc/systemd/system/zeazdev-frontend.service <<'UNIT'
@@ -258,8 +242,29 @@ const DASH_DIR = path.join(BASE,"Dashboard");
 const app = express();
 app.use(express.json());
 app.use(express.static(DASH_DIR));
-app.get("/api/results", (req,res)=>{ try{ const files = fs.existsSync(RESULTS_DIR)?fs.readdirSync(RESULTS_DIR):[]; const data=[]; for(const f of files){ if(f.endsWith(".json")){ try{ data.push(JSON.parse(fs.readFileSync(path.join(RESULTS_DIR,f),"utf8"))); }catch(e){} } } res.json({ok:true,results:data}); }catch(e){ res.status(500).json({ok:false,error:e.message}); }});
-app.get("/api/logtail",(req,res)=>{ try{ const lines = parseInt(req.query.lines||"200",10); if(!fs.existsSync(LOG_DIR)) return res.json({ok:true,log:""}); const files = fs.readdirSync(LOG_DIR).filter(f=>f.endsWith(".log")).sort(); if(files.length===0) return res.json({ok:true,log:""}); const latest = files[files.length-1]; const raw = fs.readFileSync(path.join(LOG_DIR,latest),"utf8"); const arr = raw.split(/\r?\n/).slice(-lines).join("\n"); res.json({ok:true,file:latest,log:arr}); }catch(e){ res.status(500).json({ok:false,error:e.message}); }});
+app.get("/api/results", (req,res)=>{
+// Secure logtail endpoint: requires DASH_SECRET and bounds 'lines'
+app.get("/api/logtail",(req,res)=>{
+  try{
+    const secret = process.env.DASH_SECRET || "";
+    if(!secret || req.query.token !== secret){
+      return res.status(401).json({ok:false,error:"Unauthorized"});
+    }
+    let lines = parseInt(req.query.lines||"200",10);
+    if (isNaN(lines) || lines < 1) lines = 1;
+    const MAX_LOG_LINES = 1000;
+    if (lines > MAX_LOG_LINES) lines = MAX_LOG_LINES;
+    if(!fs.existsSync(LOG_DIR)) return res.json({ok:true,log:""});
+    const files = fs.readdirSync(LOG_DIR).filter(f=>f.endsWith(".log")).sort();
+    if(files.length===0) return res.json({ok:true,log:""});
+    const latest = files[files.length-1];
+    const raw = fs.readFileSync(path.join(LOG_DIR,latest),"utf8");
+    const arr = raw.split(/\r?\n/).slice(-lines).join("\n");
+    res.json({ok:true,file:latest,log:arr});
+  }catch(e){
+    res.status(500).json({ok:false,error:e.message});
+  }
+});
 const server = http.createServer(app);
 const wss = new WebSocketServer({server,path:"/ws"});
 wss.on("connection", ws => ws.send(JSON.stringify({type:"hello",ts:Date.now()})));
