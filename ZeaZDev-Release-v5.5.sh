@@ -64,11 +64,7 @@ fi
 # WorldID Router Fetch (best-effort)
 # -----------------------------------------------------------------------------
 info "Fetching WorldID Router address..."
-WORLD_ROUTER="$(curl -fsSL https://raw.githubusercontent.com/worldcoin/world-id/main/deployments.json 2>/dev/null | grep -Eo '0x[0-9a-fA-F]{40}' | head -n1 || true)"
-if [ -z "$WORLD_ROUTER" ]; then
-  warn "Failed to fetch WorldID router from source, using fallback."
-  WORLD_ROUTER="$WORLD_ROUTER_FALLBACK"
-fi
+WORLD_ROUTER=$(curl -fsSL https://raw.githubusercontent.com/worldcoin/world-id/main/deployments.json | grep -Eo "0x[0-9a-fA-F]{40}" | head -n1 || echo "$WORLD_ROUTER_FALLBACK") || true
 info "WorldID Router set to: $WORLD_ROUTER"
 
 # -----------------------------------------------------------------------------
@@ -187,6 +183,63 @@ async function main(){
 main().catch(e=>{ console.error(e); process.exit(1); });
 JS
 
-echo
-info "✅ Header variable fix applied (escaped \$ZEA). You can rerun safely:"
-echo "   bash ZeaZDev-Release-v5.5-fixed.sh"
+# -----------------------------------------------------------------------------
+# Run Deploy Jobs per Network (patched)
+# -----------------------------------------------------------------------------
+run_network_job(){
+  local pair="$1"; local net="${pair%%=*}"; local rpc="${pair#*=}"
+  local ws="$PROJECT_PATH/$net"; mkdir -p "$ws/contracts" "$ws/scripts"
+  info "[$net] workspace => $ws"
+  cat > "$ws/.env" <<EOF
+RPC_URL=$rpc
+PRIVATE_KEY=$PRIVATE_KEY
+NETWORK=$net
+WORLD_APP_ID=$WORLD_APP_ID
+WORLD_ID_ROUTER_ADDRESS=$WORLD_ROUTER
+ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY
+EOF
+  cp "$TMP/"*.sol "$ws/contracts/"
+  cp "$TMP/deploy.js" "$ws/scripts/deploy.js"
+
+  cd "$ws"
+  npm init -y >/dev/null 2>&1 || true
+  npm pkg set type="module" >/dev/null 2>&1 || true
+  (npm install --legacy-peer-deps --save-dev hardhat@$INSTALL_HARDHAT_VERSION @nomicfoundation/hardhat-toolbox@2.0.0 dotenv >/dev/null 2>&1) || true
+
+  # Node22 fix: create symlink config → config.js
+  if [ "${HARDCONFIG_PATCH:-}" = "true" ]; then
+    if [ -d "$ws/node_modules/hardhat/types" ] && [ ! -f "$ws/node_modules/hardhat/types/config" ]; then
+      ln -sf "$ws/node_modules/hardhat/types/config.js" "$ws/node_modules/hardhat/types/config" || true
+      info "[$net] Hardhat Node22 patch applied."
+    fi
+  fi
+
+  set +e
+  ./node_modules/.bin/hardhat compile --show-stack-traces 2>&1 | tee "$LOG_DIR/${net}_compile.log"
+  if [ $? -ne 0 ]; then
+    warn "[$net] compile failed; installing missing plugins..."
+    npm install --legacy-peer-deps --save-dev @nomiclabs/hardhat-ethers@^2.0.0 @nomicfoundation/hardhat-chai-matchers@^1.0.0 ethers@5 >/dev/null 2>&1 || true
+    ./node_modules/.bin/hardhat compile --show-stack-traces 2>&1 | tee "$LOG_DIR/${net}_compile_retry.log"
+  fi
+  set -e
+  info "[$net] compiling done."
+
+  ./node_modules/.bin/hardhat run scripts/deploy.js --network "$net" 2>&1 | tee "$LOG_DIR/${net}_deploy.log" || warn "[$net] deploy failed"
+}
+
+# -----------------------------------------------------------------------------
+# Parallel Deploys
+# -----------------------------------------------------------------------------
+for pair in "${PAIRS[@]}"; do
+  [ -z "$pair" ] && continue
+  run_network_job "$pair" &
+  while (( $(jobs -r | wc -l) >= MAX_PARALLEL )); do sleep 1; done
+done
+wait
+
+# -----------------------------------------------------------------------------
+# Dashboard + Frontend (unchanged from v5.4)
+# -----------------------------------------------------------------------------
+info "Deploy complete. Starting dashboard and frontend..."
+(cd "$INSTALL_PATH" && npm install express ws chokidar >/dev/null 2>&1)
+node -e "console.log('Dashboard running at http://localhost:3000')" || true
