@@ -33,7 +33,20 @@ RESULTS_DIR="$INSTALL_PATH/Results"
 LOG_DIR="$INSTALL_PATH/Logs"
 BACKUP_DIR="$INSTALL_PATH/Backups"
 TMP_DIR="/tmp/zeazdev_v57"
-mkdir -p "$PROJECT_PATH" "$FRONT_PATH" "$DASH_PATH" "$RESULTS_DIR" "$LOG_DIR" "$BACKUP_DIR" "$TMP_DIR"
+create_dir(){
+  local dir="$1"
+  if ! mkdir -p "$dir"; then
+    err "Could not create directory: $dir"
+    exit 1
+  fi
+}
+create_dir "$PROJECT_PATH"
+create_dir "$FRONT_PATH"
+create_dir "$DASH_PATH"
+create_dir "$RESULTS_DIR"
+create_dir "$LOG_DIR"
+create_dir "$BACKUP_DIR"
+create_dir "$TMP_DIR"
 
 # Environment variables (non-interactive supported)
 : "${MULTI_RPC_LIST:=${MULTI_RPC_LIST:-}}"
@@ -80,11 +93,11 @@ if [ -z "$MULTI_RPC_LIST" ] || [ -z "$WORLD_APP_ID" ] || [ -z "$PRIVATE_KEY" ]; 
   MULTI_RPC_LIST="${MULTI_RPC_LIST:-$I_MULTI_RPC_LIST}"
   read -p "Enter WORLD_APP_ID (WorldID app id): " I_WORLD_APP_ID
   WORLD_APP_ID="${WORLD_APP_ID:-$I_WORLD_APP_ID}"
-  read -p "Enter PRIVATE_KEY (0x...): " I_PRIVATE_KEY
+  read -s -p "Enter PRIVATE_KEY (0x...): " I_PRIVATE_KEY; echo
   PRIVATE_KEY="${PRIVATE_KEY:-$I_PRIVATE_KEY}"
-  read -p "Enter ETHERSCAN_API_KEY (optional): " I_ETH
+  read -s -p "Enter ETHERSCAN_API_KEY (optional): " I_ETH; echo
   ETHERSCAN_API_KEY="${ETHERSCAN_API_KEY:-$I_ETH}"
-  read -p "Enter TELEGRAM_BOT_TOKEN (optional): " I_TG
+  read -s -p "Enter TELEGRAM_BOT_TOKEN (optional): " I_TG; echo
   TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-$I_TG}"
   read -p "Enter TELEGRAM_CHAT_ID (optional): " I_TGCHAT
   TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-$I_TGCHAT}"
@@ -144,17 +157,17 @@ install_node_npm(){
 # ---------------------------
 cat > "$INSTALL_PATH/.env.EXAMPLE" <<EOF
 # ZeaZDev v5.7 .env example
-MULTI_RPC_LIST=$MULTI_RPC_LIST
-WORLD_APP_ID=$WORLD_APP_ID
-PRIVATE_KEY=$PRIVATE_KEY
-ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY
-TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN
-TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID
-GIT_LOG_REPO=$GIT_LOG_REPO
-FRONT_DOMAIN=$FRONT_DOMAIN
-WORLD_ID_ROUTER_ADDRESS=$WORLD_ROUTER_FALLBACK
-DEPLOY_WEBHOOK_URL=$DEPLOY_WEBHOOK_URL
-CERT_EMAIL=$CERT_EMAIL
+MULTI_RPC_LIST=example-rpc-list-comma-separated
+WORLD_APP_ID=your-example-world-app-id
+PRIVATE_KEY=your-private-key-here
+ETHERSCAN_API_KEY=your-etherscan-api-key-here
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token-here
+TELEGRAM_CHAT_ID=your-telegram-chat-id-here
+GIT_LOG_REPO=your-github-repo-url-here
+FRONT_DOMAIN=your-app-domain-here
+WORLD_ID_ROUTER_ADDRESS=your-router-address-here
+DEPLOY_WEBHOOK_URL=https://webhook.example.com/path
+CERT_EMAIL=your-email@example.com
 EOF
 info ".env.EXAMPLE written to $INSTALL_PATH/.env.EXAMPLE"
 
@@ -390,6 +403,7 @@ ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY}
 WORLD_ID_ROUTER_ADDRESS=${WORLD_ROUTER}
 DEPLOY_WEBHOOK_URL=${DEPLOY_WEBHOOK_URL}
 EOF
+  chmod 600 "$ws/.env"
 
   # npm init and set ESM
   (cd "$ws" && npm init -y >/dev/null 2>&1 || true)

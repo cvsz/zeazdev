@@ -36,13 +36,16 @@ elif [[ "$NODE_VER" =~ ^v1[89] || "$NODE_VER" =~ ^v20 ]]; then
   export NODE22_MODE=false
 else
   warn "Unsupported Node.js version — switching to Node 20 LTS..."
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
+  curl -fsSL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource_setup.sh \
+    && bash /tmp/nodesource_setup.sh \
+    && rm /tmp/nodesource_setup.sh \
+    && apt-get install -y nodejs
 fi
 
-# ====== WorldID Router fetch ======
-info "Fetching WorldID Router address..."
-WORLD_ROUTER=$(curl -fsS https://raw.githubusercontent.com/worldcoin/world-id/main/deployments.json 2>/dev/null | grep -Eo "0x[0-9a-fA-F]{40}" | head -n1 || true)
-WORLD_ROUTER=${WORLD_ROUTER:-0x57f928158C3EE7CDad1e4D8642503c4D0201f611}
+# ====== WorldID Router address (security best practice: hardcoded trusted value) ======
+info "Using trusted hardcoded WorldID Router address for security."
+WORLD_ROUTER="0x57f928158C3EE7CDad1e4D8642503c4D0201f611"
+
 info "WorldID Router set to: $WORLD_ROUTER"
 
 # ====== Environment setup ======
@@ -113,6 +116,18 @@ export default {
 };
 JS
 
+# ====== .env.EXAMPLE Setup (ensure WORLDCHAIN_RPC is included) ======
+cat > "$PROJECT_PATH/.env.EXAMPLE" <<EOF
+# Example environment variables for Hardhat
+# Replace values as needed.
+
+PRIVATE_KEY=your_private_key_here
+SEPOLIA_RPC=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+WORLDCHAIN_RPC=https://your.worldchain.rpc.endpoint/
+ETHERSCAN_API_KEY=your_etherscan_key
+
+EOF
+
 # --- Hardhat Dependency Healer ---
 info "[HEALER] Checking Hardhat plugin dependencies..."
 npm install --legacy-peer-deps --save-dev \
@@ -138,6 +153,17 @@ async function main() {
 }
 main().catch((e) => { console.error(e); process.exit(1); });
 JS
+
+# ====== Ensure .env.EXAMPLE contains required environment variables ======
+cat > "$PROJECT_PATH/.env.EXAMPLE" <<'ENV'
+# Example environment settings for ZeaZDev/Hardhat project
+# Sepolia RPC endpoint (keep private in production)
+SEPOLIA_RPC=YOUR_SEPOLIA_RPC_URL
+# Private key for deployer account (never commit real keys)
+PRIVATE_KEY=YOUR_PRIVATE_KEY
+# Etherscan API key for contract verification
+ETHERSCAN_API_KEY=YOUR_ETHERSCAN_API_KEY
+ENV
 
 # ====== Compile & Deploy ======
 cd "$PROJECT_PATH"
