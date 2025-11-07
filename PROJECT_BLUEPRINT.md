@@ -1,8 +1,9 @@
-# พิมพ์เขียวโครงการ ZeaZDev (Project Blueprint)
+# พิมพ์เขียวโครงการ ZeaZDev Mini App (Project Blueprint)
 
-**Version:** 1.0  
+**Version:** 2.0 - World App Mini App Edition  
 **Developer:** PHIPHAT PHOEMSUK (ZeaZDev)  
 **Website:** https://app.zeaz.dev/  
+**Platform:** World App Mini App  
 **License:** MIT
 
 ---
@@ -10,22 +11,87 @@
 ## 1. บทสรุปโครงการ (Project Overview)
 
 ### Mission Statement
-ZeaZDev คือแพลตฟอร์ม Web3 ที่ออกแบบมาเพื่อสร้างระบบรางวัลและ Airdrop บน Blockchain อย่างมีประสิทธิภาพ โดยใช้เทคโนโลยี Smart Contract เพื่อให้การแจกจ่าย Token เป็นไปอย่างโปร่งใส ปลอดภัย และตรวจสอบได้
+ZeaZDev คือ World App Mini App ที่ใช้เทคโนโลยี Zero-Knowledge Proof (ZKP) ผ่าน World ID สำหรับการยืนยันตัวตน (Proof of Personhood) และให้บริการทางการเงินแบบ DeFi บน Blockchain โดยผู้ใช้จะได้รับรางวัลรายวัน, Airdrop และสามารถทำธุรกรรมแบบ Swap Token ได้อย่างปลอดภัยและไม่ต้องจ่าย Gas (Gasless Transactions)
 
 ### Problem Statement
-ปัญหาหลักที่ ZeaZDev แก้ไข:
-- **ความยุ่งยากในการ Deploy Smart Contract:** นักพัฒนาหลายคนประสบปัญหาในการตั้งค่าและ Deploy Smart Contract บนหลาย Network
-- **การจัดการ Airdrop ที่ซับซ้อน:** การแจกจ่าย Token แบบ Airdrop ต้องการระบบ Merkle Tree และการตรวจสอบที่ซับซ้อน
-- **ขาด Infrastructure สำหรับระบบรางวัล:** ไม่มีเครื่องมือที่ง่ายสำหรับการสร้างระบบรางวัลแบบ On-chain
-- **การจัดการ Multi-chain ที่ยาก:** การ Deploy และดูแลระบบบนหลาย Blockchain พร้อมกันต้องใช้ความเชี่ยวชาญสูง
+ปัญหาหลักที่ ZeaZDev Mini App แก้ไข:
+- **Sybil Attack ในระบบรางวัล:** ผู้ใช้สามารถสร้างหลาย Account เพื่อรับรางวัลซ้ำ ทำให้การแจกจ่ายไม่เป็นธรรม
+- **ค่า Gas ที่สูง:** ผู้ใช้ต้องจ่ายค่า Gas เองในการทำธุรกรรม ทำให้ผู้เริ่มต้นไม่สามารถเข้าถึงได้
+- **การยืนยันตัวตนที่ซับซ้อน:** ระบบ KYC แบบเดิมต้องเปิดเผยข้อมูลส่วนตัว ขาดความเป็นส่วนตัว
+- **UX ที่ซับซ้อนในการใช้ DeFi:** ผู้ใช้ทั่วไปไม่เข้าใจวิธีใช้ Wallet, Swap และ DeFi Tools
+- **ขาดระบบ Incentive สำหรับผู้ใช้:** ไม่มีแรงจูงใจให้ผู้ใช้กลับมาใช้งานอย่างต่อเนื่อง
 
 ### Solution
-ZeaZDev แก้ไขปัญหาเหล่านี้ด้วย:
-- **Automated Deployment System:** สคริปต์อัตโนมัติที่จัดการ Deploy Smart Contract บนหลาย Network พร้อมกัน
-- **Merkle-based Airdrop:** ระบบ Airdrop ที่ใช้ Merkle Tree เพื่อความปลอดภัยและประหยัด Gas
-- **Reward Distribution System:** Smart Contract สำหรับแจกจ่ายรางวัลแบบ On-chain พร้อมระบบป้องกันการจ่ายซ้ำ (Idempotency)
-- **Multi-chain Support:** รองรับการทำงานบน WorldChain, Base, Sepolia และ Ethereum Mainnet
-- **WorldID Integration:** ผสานระบบยืนยันตัวตนด้วย WorldID เพื่อป้องกัน Sybil Attack
+ZeaZDev Mini App แก้ไขปัญหาเหล่านี้ด้วย:
+- **World ID Integration (ZKP):** ใช้ Zero-Knowledge Proof เพื่อยืนยันว่าผู้ใช้เป็นมนุษย์จริง (Proof of Personhood) โดยไม่ต้องเปิดเผยข้อมูลส่วนตัว และป้องกัน Sybil Attack ด้วย Nullifier Hash
+- **Gasless Transactions (Meta-Transactions):** ระบบ Relayer ช่วยจ่ายค่า Gas ให้ผู้ใช้ ทำให้ผู้เริ่มต้นสามารถใช้งานได้ทันที
+- **Daily Check-in Rewards with Streak:** ระบบรางวัลรายวันที่สร้างแรงจูงใจด้วย Streak System เพื่อให้ผู้ใช้กลับมาใช้งานต่อเนื่อง
+- **One-time Airdrop:** รางวัลต้อนรับสำหรับผู้ใช้ที่ผ่านการยืนยัน World ID
+- **DEX Integration:** ระบบ Swap Token ที่เชื่อมต่อกับ Decentralized Exchange (เช่น Uniswap) ภายใน Mini App
+- **React Native (Expo) UI/UX:** Interface ที่เรียบง่าย เหมาะสำหรับ Mobile-first และทำงานบน World App
+
+---
+
+## 1.1 World ID Zero-Knowledge Proof Workflow (ขั้นตอนการยืนยันตัวตน)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    World ID ZKP Workflow                        │
+└─────────────────────────────────────────────────────────────────┘
+
+Step 1: Frontend (Mini App)
+┌──────────────────────────────────────┐
+│ User opens ZeaZDev Mini App          │
+│ → Clicks "Verify with World ID"      │
+│ → IDKit widget opens                 │
+└──────────┬───────────────────────────┘
+           │
+           ▼
+Step 2: World App (Verification)
+┌──────────────────────────────────────┐
+│ User scans with World ID Orb/Device  │
+│ → Generates Zero-Knowledge Proof     │
+│ → Returns:                           │
+│   • merkle_root                      │
+│   • nullifier_hash (unique ID)       │
+│   • proof (ZKP array)                │
+└──────────┬───────────────────────────┘
+           │
+           ▼
+Step 3: Backend Verifier (Node.js)
+┌──────────────────────────────────────┐
+│ Receives proof from frontend         │
+│ → Calls World ID API for validation  │
+│ → Checks nullifier_hash uniqueness   │
+│ → If valid, proceeds to Step 4       │
+└──────────┬───────────────────────────┘
+           │
+           ▼
+Step 4: Smart Contract (On-chain)
+┌──────────────────────────────────────┐
+│ Backend calls verifyAndRegister()    │
+│ → Contract verifies ZKP on-chain     │
+│ → Stores nullifier_hash              │
+│ → Marks user as verified             │
+│ → Emits UserVerified event           │
+└──────────┬───────────────────────────┘
+           │
+           ▼
+Step 5: Access Granted
+┌──────────────────────────────────────┐
+│ User can now:                        │
+│ ✓ Claim Airdrop (one-time)          │
+│ ✓ Daily Check-in for rewards        │
+│ ✓ Use Wallet features                │
+│ ✓ Swap tokens                        │
+└──────────────────────────────────────┘
+
+Key Security Features:
+• Nullifier Hash prevents same person from verifying twice
+• Zero-Knowledge Proof ensures privacy (no personal data stored)
+• On-chain verification ensures tamper-proof records
+• Relayer system provides gasless transactions
+```
 
 ---
 
@@ -156,32 +222,64 @@ ZeaZDev แก้ไขปัญหาเหล่านี้ด้วย:
 
 ## 4. Technology Stack ที่แนะนำ (Recommended Tech Stack)
 
-### Frontend
-- **Framework:** Next.js 14+ (React 18+)
-- **Web3 Library:** wagmi, viem, @tanstack/react-query
-- **UI Framework:** TailwindCSS
-- **Wallet Connection:** WalletConnect, MetaMask
-- **WorldID:** @worldcoin/idkit
+### Frontend (Mini App UI)
+- **Framework:** React Native ^0.73 with Expo ~50.0
+- **Navigation:** Expo Router ~3.4
+- **World ID SDK:** @worldcoin/idkit-core ^1.0
+- **Web3 Library:** ethers ^6.10
+- **State Management:** @react-native-async-storage/async-storage
+- **UI Components:** Custom React Native components with StyleSheet
+- **Safe Area:** react-native-safe-area-context
+- **Language:** TypeScript ^5.3
 
-### Backend
+**Key Files:**
+- `mini-app/src/screens/AuthGate.tsx` - World ID verification gate
+- `mini-app/src/screens/WalletScreen.tsx` - Wallet management
+- `mini-app/src/screens/RewardScreen.tsx` - Daily check-in & airdrop
+- `mini-app/src/screens/SwapTradeScreen.tsx` - DEX token swap
+
+### Backend (Verifier & Relayer)
 - **Runtime:** Node.js 18+
-- **Smart Contract Development:** Hardhat
-- **Deployment:** ethers.js v6
-- **API Framework:** Express.js (สำหรับ Relayer)
-- **Database:** PostgreSQL (สำหรับ Off-chain data)
-- **Cache:** Redis
+- **API Framework:** Express.js ^4.18
+- **Web3 Library:** ethers.js ^6.10
+- **CORS Support:** cors ^2.8
+- **Environment:** dotenv ^16.3
+- **Process Management:** PM2 (production)
 
-### Blockchain / Web3
-- **Smart Contract Language:** Solidity ^0.8.20
-- **Libraries:** OpenZeppelin Contracts
+**Key Features:**
+- World ID proof verification via World ID API
+- Gasless transaction relay for users
+- Reward distribution endpoints
+- DEX integration for swap quotes
+
+**Main File:** `server/verifier.js`
+
+### Blockchain / Smart Contracts
+- **Language:** Solidity ^0.8.20
+- **Development Framework:** Hardhat
+- **Libraries:** 
+  - OpenZeppelin Contracts (Ownable, ReentrancyGuard, IERC20)
 - **Token Standard:** ERC-20
-- **Merkle Tree:** merkletreejs, keccak256
-- **Networks:** WorldChain, Base, Ethereum, Sepolia
+- **Primary Networks:** 
+  - WorldChain (Mainnet)
+  - Ethereum (Mainnet)
+  - Base (L2)
+  - Sepolia (Testnet)
 
-### DevOps & Deployment
-- **Containerization:** Docker, Docker Compose
-- **Web Server:** Nginx
-- **SSL:** Certbot (Let's Encrypt)
+**Key Contract:** `contracts/WorldIDRewards.sol`
+- World ID ZKP verification with nullifier tracking
+- Daily check-in rewards with 24-hour cooldown
+- One-time airdrop claim system
+- Streak tracking for consecutive check-ins
+- Idempotency protection against replay attacks
+
+### Development Tools
+- **Package Manager:** npm
+- **TypeScript:** ^5.3
+- **Node Version:** 18+
+- **Testing:** Jest (for backend), React Native Testing Library
+- **Code Editor:** VS Code recommended
+- **Mobile Testing:** Expo Go app for development
 - **Process Management:** PM2
 - **CI/CD:** GitHub Actions
 - **Monitoring:** Telegram Bot notifications
