@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "ZeaZDev Mini App",
+    "slug": "zeazdev-mini-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.zeaz.miniapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "dev.zeaz.miniapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "worldAppId": process.env.WORLD_APP_ID,
+      "worldActionId": process.env.WORLD_ACTION_ID,
+      "apiUrl": process.env.API_URL || "http://localhost:3000"
+    }
+  }
+}
