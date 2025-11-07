@@ -1,49 +1,51 @@
-# ZeaZDev
+# ZeaZDev Mini App
 
-> A comprehensive Web3 reward and airdrop distribution platform built on Ethereum-compatible blockchains
+> A World App Mini App with World ID verification for Sybil-resistant rewards and DeFi features
 
-ZeaZDev is a production-ready blockchain platform designed to simplify the deployment and management of token airdrops and reward distribution systems. It leverages Merkle Tree cryptography for efficient on-chain verification, supports multi-chain deployments, and integrates WorldID for Sybil-resistant user verification.
+ZeaZDev is a production-ready World App Mini App that uses Zero-Knowledge Proof (ZKP) via World ID to provide Proof of Personhood verification. Users can claim daily rewards, receive airdrops, manage their wallets, and swap tokens - all with gasless transactions powered by a relayer service.
 
 ## ✨ Key Features
 
-- **🎁 Merkle-based Airdrop System** - Efficient token distribution using Merkle Tree proofs, significantly reducing gas costs
-- **🏆 On-chain Reward Distribution** - Secure reward system with idempotency protection to prevent double-spending
-- **🌍 Multi-chain Support** - Deploy seamlessly on WorldChain, Base, Sepolia, and Ethereum Mainnet
-- **🔐 WorldID Integration** - Sybil-resistant identity verification using Worldcoin's Proof of Personhood
-- **🚀 Automated Deployment** - One-command deployment scripts with automatic contract verification
-- **📊 Real-time Monitoring** - Dashboard for tracking distributions, transactions, and system health
-- **🔔 Telegram Notifications** - Automated alerts for critical events and transactions
-- **⚡ Gasless Transactions** - Relayer service for sponsoring user transactions (meta-transactions)
+- **🌍 World ID Verification (ZKP)** - Zero-Knowledge Proof verification for Proof of Personhood, preventing Sybil attacks without revealing personal data
+- **📱 React Native Mini App** - Mobile-first experience built with Expo, runs natively in World App
+- **🎁 Daily Check-in Rewards** - Earn ZEA tokens every 24 hours with streak tracking to incentivize continuous engagement
+- **💰 One-time Airdrop** - Welcome bonus for verified World ID users (1000 ZEA tokens)
+- **⚡ Gasless Transactions** - Relayer service pays gas fees, enabling frictionless onboarding for new users
+- **💱 DEX Token Swap** - Integrated decentralized exchange functionality for swapping WLD, ETH, ZEA, and USDC
+- **👛 Multi-Token Wallet** - Manage WLD tokens and gas tokens (ETH/MATIC) with send functionality
+- **🔒 Nullifier Hash Protection** - Prevents the same World ID from being used multiple times (anti-replay attack)
+- **🔄 Automatic Streak Tracking** - Consecutive daily check-ins build streaks for potential bonus rewards
 
 ## 🛠️ Technology Stack
 
-### Backend
-- **Smart Contracts:** Solidity ^0.8.20
-- **Development Framework:** Hardhat
-- **Libraries:** OpenZeppelin Contracts, ethers.js v6
+### Frontend (Mini App)
+- **Framework:** React Native 0.73 with Expo ~50.0
+- **Navigation:** Expo Router ~3.4
+- **World ID SDK:** @worldcoin/idkit-core ^1.0
+- **Web3 Integration:** ethers.js ^6.10
+- **Storage:** @react-native-async-storage/async-storage
+- **Language:** TypeScript 5.3+
+
+### Backend (Verifier & Relayer)
 - **Runtime:** Node.js 18+
-- **API Server:** Express.js (for Relayer service)
+- **API Framework:** Express.js 4.18
+- **Web3 Library:** ethers.js 6.10
+- **CORS:** cors 2.8
+- **Environment:** dotenv 16.3
 
-### Frontend
-- **Framework:** Next.js 14+ (React 18+)
-- **Web3 Integration:** wagmi, viem, @tanstack/react-query
-- **UI Framework:** TailwindCSS
-- **Wallet Support:** MetaMask, WalletConnect
-- **Identity:** @worldcoin/idkit
-
-### Blockchain / Web3
+### Smart Contracts
+- **Language:** Solidity ^0.8.20
+- **Development:** Hardhat
+- **Libraries:** OpenZeppelin Contracts (Ownable, ReentrancyGuard, IERC20)
 - **Token Standard:** ERC-20
-- **Networks:** WorldChain (Primary), Base, Ethereum, Sepolia (Testnet)
-- **Merkle Tree:** merkletreejs, keccak256
-- **Verification:** Etherscan API
+- **Networks:** WorldChain (Primary), Ethereum, Base, Sepolia
 
-### DevOps
-- **Containerization:** Docker, Docker Compose
-- **Web Server:** Nginx with SSL/TLS
-- **Process Management:** PM2
-- **SSL Certificates:** Certbot (Let's Encrypt)
-- **Monitoring:** Telegram Bot integration
-- **Version Control:** Git
+### Key Smart Contract Features
+- World ID ZKP verification with nullifier tracking
+- Daily check-in with 24-hour cooldown
+- One-time airdrop claim system
+- Check-in streak tracking
+- Idempotency protection
 
 ## 🚀 Getting Started
 
@@ -53,10 +55,49 @@ Before you begin, ensure you have the following installed and configured:
 
 - **Node.js v18+** - [Download here](https://nodejs.org/)
 - **npm or yarn** - Package manager (comes with Node.js)
-- **Docker Desktop** (Optional, for containerized deployment) - [Download here](https://www.docker.com/)
-- **MetaMask or compatible wallet** - For testing
-- **Private Keys** - Deployer and Relayer wallet private keys
-- **RPC Endpoints** - For target blockchain networks
+- **Expo CLI** - Install with `npm install -g expo-cli`
+- **Expo Go App** (iOS/Android) - For testing Mini App on real devices
+- **World ID Account** - Register at [World App](https://worldcoin.org/download)
+- **World ID Developer Portal Access** - [developer.worldcoin.org](https://developer.worldcoin.org/)
+- **Private Keys:**
+  - Deployer wallet private key (for smart contract deployment)
+  - Relayer wallet private key (for gasless transactions)
+- **RPC Endpoints** - Alchemy or Infura API keys for target blockchain networks
+
+### World ID Setup Instructions
+
+#### Step 1: Register Your Mini App on Worldcoin Developer Portal
+
+1. **Visit the Developer Portal:**
+   - Go to [https://developer.worldcoin.org/](https://developer.worldcoin.org/)
+   - Sign in with your Worldcoin account
+
+2. **Create a New App:**
+   - Click "Create New App"
+   - Enter app details:
+     - **App Name:** ZeaZDev Mini App
+     - **App Description:** World ID verified rewards and DeFi platform
+     - **App Type:** Mini App
+
+3. **Configure Actions:**
+   - Create an action for verification:
+     - **Action Name:** `verify-humanity`
+     - **Action ID:** (will be auto-generated, e.g., `verify-humanity_12345`)
+     - **Description:** Verify user is a unique human for rewards
+     - **Max Verifications:** 1 (per person)
+
+4. **Get Your Credentials:**
+   - **App ID:** (e.g., `app_staging_abc123def456...`) - For frontend
+   - **API Key:** (e.g., `api_secret_xyz789...`) - For backend verification
+   - **Action ID:** Use for specific verification flows
+
+5. **Configure Callback URLs** (if using web version):
+   - Development: `http://localhost:3000`
+   - Production: `https://app.zeaz.dev`
+
+#### Step 2: Set Environment Variables
+
+Create a `.env` file in both `mini-app/` and `server/` directories:
 
 ### Installation & Configuration
 
@@ -66,26 +107,68 @@ Before you begin, ensure you have the following installed and configured:
    cd ZeaZDev
    ```
 
-2. **Install Dependencies**
-   ```bash
-   # Install root dependencies
-   npm install
+2. **Configure Mini App (Frontend)**
    
-   # If using separate packages
-   cd contracts && npm install
-   cd ../frontend && npm install
+   ```bash
+   cd mini-app
+   npm install
+   ```
+   
+   Create `mini-app/.env`:
+   ```bash
+   # World ID Configuration (from Developer Portal)
+   WORLD_APP_ID=app_staging_your_app_id_here
+   WORLD_ACTION_ID=verify-humanity_your_action_id
+   
+   # API Configuration
+   API_URL=http://localhost:3000
+   RPC_URL=https://worldchain-mainnet.g.alchemy.com/v2/your-key
    ```
 
-3. **Environment Configuration**
-   
-   Create a `.env` file in the project root (you can start by running `sudo bash run.sh` once, which will create a template):
+3. **Configure Backend Verifier**
    
    ```bash
-   # First run to generate .env template
-   sudo bash run.sh
+   cd ../server
+   npm install
    ```
    
-   Then edit the generated `.env` file:
+   Create `server/.env`:
+   ```bash
+   # Server Configuration
+   PORT=3000
+   
+   # World ID Configuration
+   WORLD_APP_ID=app_staging_your_app_id_here
+   WORLD_APP_API_KEY=api_your_secret_api_key_here
+   WORLD_ACTION_ID=verify-humanity_your_action_id
+   
+   # Blockchain Configuration
+   RPC_URL=https://worldchain-mainnet.g.alchemy.com/v2/your-key
+   RELAYER_PRIVATE_KEY=0xYOUR_RELAYER_PRIVATE_KEY
+   
+   # Contract Addresses (update after deployment)
+   WORLD_ID_REWARDS_CONTRACT=0x0000000000000000000000000000000000000000
+   ZEA_TOKEN_CONTRACT=0x0000000000000000000000000000000000000000
+   ```
+
+4. **Deploy Smart Contracts**
+   
+   ```bash
+   cd ../contracts
+   npm install
+   npx hardhat compile
+   
+   # Deploy WorldIDRewards contract
+   npx hardhat run scripts/deploy-worldid-rewards.js --network worldchain
+   ```
+   
+   Copy the deployed contract addresses and update them in `server/.env`
+
+5. **Legacy Configuration (if using original deployment scripts)**
+   
+   For backward compatibility with existing deployment scripts:
+   
+   Create `.env` file in the project root:
    
    ```ini
    # === ZeaZDev Configuration ===
@@ -147,90 +230,82 @@ Before you begin, ensure you have the following installed and configured:
 
 ### Running the Project
 
-#### Method 1: Automated Deployment (Recommended)
+#### Running the Mini App (Development)
 
-The easiest way to deploy the entire system:
+**Step 1: Start Backend Verifier Server**
+```bash
+cd server
+npm start
+```
+
+The backend will start on `http://localhost:3000` and handle:
+- World ID proof verification
+- Gasless transaction relay
+- Reward distribution
+- Swap quotes
+
+**Step 2: Start Mini App**
+```bash
+cd mini-app
+npm start
+# or
+expo start
+```
+
+This will open the Expo Dev Tools in your browser.
+
+**Step 3: Test on Device**
+- Scan the QR code with Expo Go app (iOS/Android)
+- The Mini App will load on your device
+- Test World ID verification flow
+- Test all features (Wallet, Rewards, Swap)
+
+#### Running on World App (Production)
+
+To deploy your Mini App to World App:
+
+1. **Build for Production:**
+   ```bash
+   cd mini-app
+   eas build --platform ios
+   eas build --platform android
+   ```
+
+2. **Submit to World App:**
+   - Follow World App Mini App submission guidelines
+   - Provide App ID and action configurations
+   - Wait for approval
+
+3. **Production Backend:**
+   ```bash
+   cd server
+   npm start
+   # Use PM2 for process management in production
+   pm2 start verifier.js --name zeazdev-verifier
+   ```
+
+#### Legacy Deployment (Original Scripts)
+
+For backward compatibility with existing deployment infrastructure:
 
 ```bash
 # Run the automated installer
 sudo bash run.sh
 ```
 
-This script will:
-1. Generate `.env` template if it doesn't exist (stop and prompt you to edit it)
-2. Export environment variables
-3. Run the main installer script
-4. Deploy smart contracts on all configured networks
-5. Set up frontend and backend services
-6. Configure Nginx with SSL
-7. Start monitoring services
-
-#### Method 2: Manual Deployment
-
-For development or custom deployment:
-
-**Step 1: Generate Merkle Tree**
-```bash
-cd packages/merkle-generator
-npm install
-node generate-merkle.js
-```
-
-**Step 2: Compile Contracts**
-```bash
-cd packages/hardhat
-npm install
-npx hardhat compile
-```
-
-**Step 3: Deploy Contracts**
-```bash
-# Deploy to specific network
-npx hardhat run scripts/deploy.js --network sepolia
-
-# Or use the automated script
-bash ZeaZDev-Release-v10.1.sh
-```
-
-**Step 4: Start Frontend**
-```bash
-cd packages/frontend
-npm install
-npm run build
-npm start
-```
-
-The frontend will be available at `http://localhost:3000`
-
-**Step 5: Start Backend/Relayer (Optional)**
-```bash
-cd packages/backend
-npm install
-npm start
-```
-
-#### Method 3: Docker Deployment
-
-For containerized deployment:
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
-```
+This will deploy the original Web3 infrastructure including Merkle-based airdrops.
 
 ### Accessing the Application
 
-After successful deployment:
+**Development:**
+- **Mini App:** Via Expo Go app (scan QR code)
+- **Backend API:** `http://localhost:3000`
+- **Smart Contracts:** Deployed on configured networks
 
-- **Frontend dApp:** `https://app.zeaz.dev` or `http://localhost:3000`
-- **Admin Dashboard:** `https://dash.zeaz.dev` or `http://localhost:8080`
-- **API Server:** `https://api.zeaz.dev` or `http://localhost:3001`
+**Production (World App):**
+- **Mini App:** Available in World App's Mini Apps section
+- **Backend API:** Your production API URL
+- **Smart Contracts:** Deployed on WorldChain/Ethereum Mainnet
 
 ## 🧪 Running Tests
 
@@ -258,49 +333,114 @@ npm test
 
 ### For End Users
 
-1. **Connect Your Wallet**
-   - Visit the frontend dApp
-   - Click "Connect Wallet"
-   - Approve the connection in MetaMask or WalletConnect
+#### First Time Setup
 
-2. **Check Airdrop Eligibility**
-   - The system will automatically check if your address is in the whitelist
-   - If eligible, you'll see the amount you can claim
+1. **Open ZeaZDev Mini App**
+   - Launch World App on your device
+   - Navigate to Mini Apps section
+   - Open ZeaZDev Mini App
 
-3. **Claim Your Airdrop**
-   - Click the "Claim" button
-   - Approve the transaction in your wallet
-   - Wait for confirmation
-   - Tokens will be transferred to your wallet
+2. **Verify with World ID (Required)**
+   - The app will show "Verify with World ID" screen
+   - Click the verification button
+   - World App will prompt you to scan with Orb or use Device verification
+   - Complete the verification process
+   - Your Zero-Knowledge Proof will be generated and verified
+   - Once successful, you'll gain access to all features
 
-4. **Verify with WorldID (Optional)**
-   - For certain features, you may need to verify your identity
-   - Click "Verify with WorldID"
-   - Follow the prompts in the World App
-   - Complete the verification
+#### Daily Usage
 
-### For Administrators
+**Claim Welcome Airdrop (One-time)**
+1. After verification, go to "Rewards" tab
+2. Find the "Welcome Airdrop" section
+3. Click "Claim Airdrop"
+4. Confirm the transaction
+5. Receive 1000 ZEA tokens instantly (gasless!)
 
-1. **Deploy Smart Contracts**
+**Daily Check-in**
+1. Open "Rewards" tab
+2. Click "Check In Now" button (available every 24 hours)
+3. Earn 100 ZEA tokens per check-in
+4. Build your streak by checking in daily
+5. Track your total rewards and current streak
+
+**Manage Wallet**
+1. Go to "Wallet" tab
+2. View your WLD and Gas token balances
+3. Send tokens:
+   - Click "Send" button
+   - Select token (WLD or ETH)
+   - Enter recipient address
+   - Enter amount
+   - Confirm transaction (gasless!)
+
+**Swap Tokens**
+1. Go to "Swap" tab
+2. Select tokens to swap (e.g., WLD → ETH)
+3. Enter amount
+4. Review exchange rate and price impact
+5. Click "Swap" and confirm
+6. Transaction executes via DEX (gasless!)
+
+### For Developers
+
+#### Deploy New Instance
+
+1. **Register Mini App:**
    ```bash
-   sudo bash run.sh
+   # Get World App ID and API Key from developer portal
+   # Update .env files in mini-app/ and server/
    ```
 
-2. **Monitor System**
-   - Access the Admin Dashboard
-   - View transaction history
-   - Check system health
-   - Monitor reward distributions
+2. **Deploy Smart Contracts:**
+   ```bash
+   cd contracts
+   npx hardhat run scripts/deploy-worldid-rewards.js --network worldchain
+   # Note the contract address
+   ```
 
-3. **Distribute Rewards**
-   - The relayer service automatically handles reward distributions
-   - Manual distribution can be done through the dashboard
-   - All distributions are logged and can be audited
+3. **Fund Reward Contract:**
+   ```bash
+   # Send ZEA tokens to WorldIDRewards contract
+   # Ensure relayer wallet has gas tokens
+   ```
 
-4. **Update Whitelist**
-   - Edit the whitelist JSON file
-   - Regenerate Merkle tree
-   - Update the Merkle root in the contract (requires owner access)
+4. **Update Configuration:**
+   ```bash
+   # Update contract addresses in server/.env
+   # Update API URL in mini-app/.env
+   ```
+
+5. **Start Services:**
+   ```bash
+   # Terminal 1: Backend
+   cd server && npm start
+   
+   # Terminal 2: Mini App
+   cd mini-app && expo start
+   ```
+
+#### Monitor System
+
+**Check Backend Logs:**
+```bash
+cd server
+npm start
+# Watch console for verification requests, transactions
+```
+
+**Check Contract Status:**
+```bash
+npx hardhat console --network worldchain
+> const contract = await ethers.getContractAt("WorldIDRewards", "0x...")
+> await contract.getContractBalance()
+> await contract.isUserVerified("0x...")
+```
+
+**Monitor User Activity:**
+- All events are emitted on-chain
+- Parse `UserVerified`, `DailyCheckIn`, `AirdropClaimed` events
+- Track via blockchain explorer
 
 ## 📁 Project Structure
 
