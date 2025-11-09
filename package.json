@@ -1,9 +1,20 @@
 {
-  "name": "demo-repo",
-  "version": "0.2.0",
-  "description": "A sample package.json",
+  "name": "zeazdev",
+  "version": "1.0.0",
+  "description": "ZeaZDev - World App Mini App with World ID verification for Sybil-resistant rewards and DeFi features",
+  "scripts": {
+    "start": "bash start-all-phases.sh --all",
+    "start:all": "bash start-all-phases.sh --all",
+    "start:backend": "bash start-all-phases.sh --backend",
+    "start:frontend": "bash start-all-phases.sh --frontend",
+    "check": "bash start-all-phases.sh --check",
+    "install:all": "bash start-all-phases.sh --install",
+    "status": "bash start-all-phases.sh --status",
+    "stop": "bash start-all-phases.sh --stop"
+  },
   "dependencies": {
     "@primer/css": "17.0.1"
   },
+  "author": "PHIPHAT PHOEMSUK (ZeaZDev)",
   "license": "MIT"
 }
