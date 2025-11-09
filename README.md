@@ -49,6 +49,10 @@ ZeaZDev is a production-ready World App Mini App that uses Zero-Knowledge Proof 
 
 ## 🚀 Getting Started
 
+**⚡ Quick Start:** For the fastest way to get started, see [QUICK_START.md](QUICK_START.md) - includes a one-command setup!
+
+**📊 Phase Tracking:** Check [PHASE_STATUS.md](PHASE_STATUS.md) to see the development roadmap and track progress across all phases.
+
 ### Prerequisites
 
 Before you begin, ensure you have the following installed and configured:
