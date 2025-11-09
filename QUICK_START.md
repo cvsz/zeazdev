@@ -11,10 +11,27 @@ Before you begin, ensure you have:
 
 ## Quick Start Commands
 
-### 🎯 First-Time Setup
+### ⚡ Fastest Way - Using npm
+
+The simplest way to get started using npm scripts:
+
+```bash
+# 1. Validate configuration
+npm run check
+
+# 2. Install dependencies
+npm run install:all
+
+# 3. Start all services
+npm start
+```
+
+### 🎯 First-Time Setup (Detailed)
 
 1. **Validate Configuration**
 ```bash
+npm run check
+# or
 bash start-all-phases.sh --check
 ```
 
@@ -32,16 +49,24 @@ nano mini-app/.env
 
 2. **Install Dependencies**
 ```bash
+npm run install:all
+# or
 bash start-all-phases.sh --install
 ```
 
 3. **Validate Again**
 ```bash
+npm run check
+# or
 bash start-all-phases.sh --check
 ```
 
 ### 🎯 Start Everything (Recommended)
 ```bash
+npm start
+# or
+npm run start:all
+# or
 bash start-all-phases.sh --all
 ```
 
@@ -55,6 +80,8 @@ This will:
 
 ### 📊 Check Status
 ```bash
+npm run status
+# or
 bash start-all-phases.sh --status
 ```
 
@@ -65,6 +92,8 @@ Shows:
 
 ### 🛑 Stop All Services
 ```bash
+npm run stop
+# or
 bash start-all-phases.sh --stop
 ```
 
@@ -72,6 +101,8 @@ Cleanly stops all running services.
 
 ### 📦 Install Dependencies Only
 ```bash
+npm run install:all
+# or
 bash start-all-phases.sh --install
 ```
 
@@ -81,11 +112,15 @@ Installs dependencies without starting services.
 
 ### Backend Only
 ```bash
+npm run start:backend
+# or
 bash start-all-phases.sh --backend
 ```
 
 ### Frontend Only
 ```bash
+npm run start:frontend
+# or
 bash start-all-phases.sh --frontend
 ```
 
@@ -187,6 +222,8 @@ lsof -i :3000
 kill -9 <PID>
 
 # Or use the stop command
+npm run stop
+# or
 bash start-all-phases.sh --stop
 ```
 
@@ -196,6 +233,8 @@ bash start-all-phases.sh --stop
 npm cache clean --force
 
 # Try installing again
+npm run install:all
+# or
 bash start-all-phases.sh --install
 ```
 
@@ -214,9 +253,9 @@ All logs are stored in `Logs/` directory:
 
 ## Next Steps
 
-1. ✅ Run `bash start-all-phases.sh --check` to validate setup
+1. ✅ Run `npm run check` (or `bash start-all-phases.sh --check`) to validate setup
 2. ✅ Configure `.env` files using the `.env.example` templates
-3. ✅ Run `bash start-all-phases.sh --all`
+3. ✅ Run `npm start` (or `bash start-all-phases.sh --all`)
 4. ✅ Test backend API at http://localhost:3000/health
 5. ✅ Test mini-app on your device
 6. ✅ Check `PHASE_STATUS.md` for development roadmap
@@ -224,7 +263,10 @@ All logs are stored in `Logs/` directory:
 ## Getting Help
 
 ```bash
-# Show all available options
+# Show all available npm scripts
+npm run
+
+# Show all script options
 bash start-all-phases.sh --help
 ```
 

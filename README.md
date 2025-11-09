@@ -236,9 +236,32 @@ Create a `.env` file in both `mini-app/` and `server/` directories:
 
 #### Quick Start - All Phases (Recommended)
 
-**Automated Startup Script**
+**Automated Startup with npm (Easiest)**
 
-The easiest way to start all components at once:
+The simplest way to start all components using npm scripts:
+
+```bash
+# First-time setup: Validate configuration
+npm run check
+
+# Install dependencies for all components
+npm run install:all
+
+# Start all services (backend + frontend)
+npm start
+# or
+npm run start:all
+
+# Or for specific components:
+npm run start:backend    # Backend only
+npm run start:frontend   # Frontend only
+npm run status           # Check status
+npm run stop             # Stop all services
+```
+
+**Alternative: Direct Script Usage**
+
+You can also run the script directly:
 
 ```bash
 # First-time setup: Validate configuration
