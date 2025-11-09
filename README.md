@@ -230,7 +230,38 @@ Create a `.env` file in both `mini-app/` and `server/` directories:
 
 ### Running the Project
 
-#### Running the Mini App (Development)
+#### Quick Start - All Phases (Recommended)
+
+**Automated Startup Script**
+
+The easiest way to start all components at once:
+
+```bash
+# Start all services (backend + frontend)
+bash start-all-phases.sh --all
+
+# Or for specific components:
+bash start-all-phases.sh --backend    # Backend only
+bash start-all-phases.sh --frontend   # Frontend only
+bash start-all-phases.sh --status     # Check status
+bash start-all-phases.sh --stop       # Stop all services
+bash start-all-phases.sh --help       # Show help
+```
+
+The script will:
+- ✅ Check prerequisites (Node.js, npm)
+- ✅ Install dependencies if needed
+- ✅ Start backend verifier service
+- ✅ Start mini-app with Expo
+- ✅ Display service status
+- ✅ Create logs in `Logs/` directory
+
+**Phase Status Tracking:**
+- Check `PHASE_STATUS.md` for development roadmap
+- Track progress across all 4 phases (Q1-Q4 2025)
+- View completed and planned features
+
+#### Manual Startup (Alternative Method)
 
 **Step 1: Start Backend Verifier Server**
 ```bash
