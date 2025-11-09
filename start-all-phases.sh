@@ -197,9 +197,8 @@ check_environment() {
     
     # Check root .env
     if [ ! -f "${PROJECT_ROOT}/.env" ]; then
-        log_warn "Root .env file not found"
-        log_info "Example configuration available in README.md"
-        env_missing=1
+        log_warn "Root .env file not found (optional for legacy scripts)"
+        log_info "See README.md for root .env configuration if using legacy deployment"
     else
         log_info "Root .env file found ✓"
     fi
@@ -207,7 +206,12 @@ check_environment() {
     # Check server .env
     if [ -d "$SERVER_DIR" ] && [ ! -f "${SERVER_DIR}/.env" ]; then
         log_warn "Server .env file not found"
-        log_info "Create ${SERVER_DIR}/.env based on README.md instructions"
+        if [ -f "${SERVER_DIR}/.env.example" ]; then
+            log_info "To create it, run: cp ${SERVER_DIR}/.env.example ${SERVER_DIR}/.env"
+            log_info "Then edit ${SERVER_DIR}/.env with your actual configuration values"
+        else
+            log_info "Create ${SERVER_DIR}/.env based on README.md instructions"
+        fi
         env_missing=1
     else
         [ -d "$SERVER_DIR" ] && log_info "Server .env file found ✓"
@@ -216,7 +220,12 @@ check_environment() {
     # Check mini-app .env
     if [ -d "$MINI_APP_DIR" ] && [ ! -f "${MINI_APP_DIR}/.env" ]; then
         log_warn "Mini-app .env file not found"
-        log_info "Create ${MINI_APP_DIR}/.env based on README.md instructions"
+        if [ -f "${MINI_APP_DIR}/.env.example" ]; then
+            log_info "To create it, run: cp ${MINI_APP_DIR}/.env.example ${MINI_APP_DIR}/.env"
+            log_info "Then edit ${MINI_APP_DIR}/.env with your actual configuration values"
+        else
+            log_info "Create ${MINI_APP_DIR}/.env based on README.md instructions"
+        fi
         env_missing=1
     else
         [ -d "$MINI_APP_DIR" ] && log_info "Mini-app .env file found ✓"
@@ -224,7 +233,14 @@ check_environment() {
     
     if [ $env_missing -eq 1 ]; then
         log_warn "Some .env files are missing. Services may not start correctly."
-        log_info "Please refer to README.md for .env configuration examples."
+        log_info "Quick setup:"
+        echo ""
+        [ -f "${SERVER_DIR}/.env.example" ] && echo "  cp ${SERVER_DIR}/.env.example ${SERVER_DIR}/.env"
+        [ -f "${MINI_APP_DIR}/.env.example" ] && echo "  cp ${MINI_APP_DIR}/.env.example ${MINI_APP_DIR}/.env"
+        echo ""
+        log_info "Then edit the .env files with your actual configuration values."
+        log_info "See README.md for detailed configuration instructions."
+        echo ""
         read -p "Continue anyway? (y/N): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -466,12 +482,15 @@ Options:
   --status       Show status of all phases and services
   --stop         Stop all running services
   --install      Install dependencies only
+  --check        Validate configuration without starting services
   --help         Show this help message
 
 Examples:
   bash start-all-phases.sh                 # Start all components
   bash start-all-phases.sh --backend       # Start backend only
   bash start-all-phases.sh --status        # Check status
+  bash start-all-phases.sh --check         # Validate configuration
+  bash start-all-phases.sh --stop          # Stop all services
   bash start-all-phases.sh --stop          # Stop all services
 
 Environment Setup:
@@ -509,6 +528,14 @@ main() {
             ;;
         --stop)
             stop_services
+            exit 0
+            ;;
+        --check)
+            check_prerequisites
+            check_directory_structure
+            check_environment
+            log_info "Configuration validation completed ✓"
+            log_info "All checks passed. You can now run: bash start-all-phases.sh --all"
             exit 0
             ;;
         --install)

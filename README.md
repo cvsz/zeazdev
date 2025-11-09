@@ -241,6 +241,12 @@ Create a `.env` file in both `mini-app/` and `server/` directories:
 The easiest way to start all components at once:
 
 ```bash
+# First-time setup: Validate configuration
+bash start-all-phases.sh --check
+
+# Install dependencies only
+bash start-all-phases.sh --install
+
 # Start all services (backend + frontend)
 bash start-all-phases.sh --all
 
@@ -252,8 +258,23 @@ bash start-all-phases.sh --stop       # Stop all services
 bash start-all-phases.sh --help       # Show help
 ```
 
+**Environment Setup (First Time):**
+
+Before starting services, create your environment configuration files:
+
+```bash
+# Copy example files
+cp server/.env.example server/.env
+cp mini-app/.env.example mini-app/.env
+
+# Edit the files with your actual configuration
+nano server/.env
+nano mini-app/.env
+```
+
 The script will:
 - ✅ Check prerequisites (Node.js, npm)
+- ✅ Validate environment configuration
 - ✅ Install dependencies if needed
 - ✅ Start backend verifier service
 - ✅ Start mini-app with Expo

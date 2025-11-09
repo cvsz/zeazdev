@@ -11,6 +11,35 @@ Before you begin, ensure you have:
 
 ## Quick Start Commands
 
+### 🎯 First-Time Setup
+
+1. **Validate Configuration**
+```bash
+bash start-all-phases.sh --check
+```
+
+This validates your environment without starting services. If `.env` files are missing, it will show you how to create them:
+
+```bash
+# Copy example files to create your .env files
+cp server/.env.example server/.env
+cp mini-app/.env.example mini-app/.env
+
+# Edit with your actual configuration
+nano server/.env
+nano mini-app/.env
+```
+
+2. **Install Dependencies**
+```bash
+bash start-all-phases.sh --install
+```
+
+3. **Validate Again**
+```bash
+bash start-all-phases.sh --check
+```
+
 ### 🎯 Start Everything (Recommended)
 ```bash
 bash start-all-phases.sh --all
@@ -18,10 +47,11 @@ bash start-all-phases.sh --all
 
 This will:
 1. Check prerequisites
-2. Install dependencies
-3. Start backend service
-4. Start mini-app with Expo
-5. Show service status
+2. Validate environment configuration
+3. Install dependencies
+4. Start backend service
+5. Start mini-app with Expo
+6. Show service status
 
 ### 📊 Check Status
 ```bash
@@ -69,6 +99,13 @@ bash start-all-phases.sh --contracts
 Before running services, create these `.env` files:
 
 ### 1. Server Environment (`server/.env`)
+
+Copy from example:
+```bash
+cp server/.env.example server/.env
+```
+
+Then edit with your values:
 ```bash
 # Server Configuration
 PORT=3000
@@ -76,7 +113,7 @@ PORT=3000
 # World ID Configuration
 WORLD_APP_ID=app_staging_your_app_id_here
 WORLD_APP_API_KEY=api_your_secret_api_key_here
-WORLD_ACTION_ID=verify-humanity_your_action_id
+WORLD_ACTION_ID=verify-humanity
 
 # Blockchain Configuration
 RPC_URL=https://worldchain-mainnet.g.alchemy.com/v2/your-key
@@ -88,10 +125,17 @@ ZEA_TOKEN_CONTRACT=0x0000000000000000000000000000000000000000
 ```
 
 ### 2. Mini-App Environment (`mini-app/.env`)
+
+Copy from example:
+```bash
+cp mini-app/.env.example mini-app/.env
+```
+
+Then edit with your values:
 ```bash
 # World ID Configuration
 WORLD_APP_ID=app_staging_your_app_id_here
-WORLD_ACTION_ID=verify-humanity_your_action_id
+WORLD_ACTION_ID=verify-humanity
 
 # API Configuration
 API_URL=http://localhost:3000
@@ -102,7 +146,7 @@ RPC_URL=https://worldchain-mainnet.g.alchemy.com/v2/your-key
 
 ### 1. Backend API Test
 ```bash
-curl http://localhost:3000
+curl http://localhost:3000/health
 ```
 
 ### 2. Mini-App Test
@@ -125,6 +169,14 @@ cat PHASE_STATUS.md
 - **Phase 4 (Enterprise & Scaling):** Planned (Q4 2025) 🟡
 
 ## Troubleshooting
+
+### Configuration Issues
+```bash
+# Validate your configuration
+bash start-all-phases.sh --check
+
+# If .env files are missing, follow the instructions provided
+```
 
 ### Port 3000 Already in Use
 ```bash
@@ -162,11 +214,12 @@ All logs are stored in `Logs/` directory:
 
 ## Next Steps
 
-1. ✅ Configure `.env` files
-2. ✅ Run `bash start-all-phases.sh --all`
-3. ✅ Test backend API at http://localhost:3000
-4. ✅ Test mini-app on your device
-5. ✅ Check `PHASE_STATUS.md` for development roadmap
+1. ✅ Run `bash start-all-phases.sh --check` to validate setup
+2. ✅ Configure `.env` files using the `.env.example` templates
+3. ✅ Run `bash start-all-phases.sh --all`
+4. ✅ Test backend API at http://localhost:3000/health
+5. ✅ Test mini-app on your device
+6. ✅ Check `PHASE_STATUS.md` for development roadmap
 
 ## Getting Help
 
