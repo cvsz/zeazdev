@@ -1,12 +1,42 @@
 /**
- * verifier.js
- * Backend server for World ID verification and reward distribution
+ * ============================================================================
+ * ZeaZDev - Full Omega Ultimate DevOps Professional Enterprises
+ * ============================================================================
+ * 
+ * Project: ZeaZDev Backend Verifier Service
+ * File: verifier.js
+ * Version: 1.0.0
+ * 
+ * Developer: PHIPHAT PHOEMSUK (ZeaZDev)
+ * Email: admin@zeaz.dev
+ * Website: https://app.zeaz.dev
+ * GitHub: https://github.com/ZeaZDev
+ * 
+ * Description:
+ * Backend server for World ID Zero-Knowledge Proof verification and 
+ * reward distribution. Acts as a relayer for gasless transactions.
+ * 
+ * Features:
+ * - World ID ZKP verification via World ID API
+ * - Smart contract interaction for reward distribution
+ * - Gasless transaction relay service
+ * - Daily check-in reward system
+ * - Airdrop claim processing
+ * - User data retrieval
  * 
  * This server:
  * 1. Receives Zero-Knowledge Proofs from frontend
- * 2. Verifies proofs with World ID
+ * 2. Verifies proofs with World ID API
  * 3. Interacts with smart contracts for rewards
  * 4. Acts as a relayer for gasless transactions
+ * 5. Manages daily check-in rewards
+ * 6. Processes airdrop claims
+ * 
+ * License: MIT
+ * Copyright (c) 2025 PHIPHAT PHOEMSUK
+ * 
+ * Last Updated: 2025-01-09
+ * ============================================================================
  */
 
 const express = require('express');
