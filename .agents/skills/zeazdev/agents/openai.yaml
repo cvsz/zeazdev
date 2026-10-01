@@ -1,0 +1,6 @@
+interface:
+  display_name: "Zeazdev"
+  short_description: "Repo-specific patterns and workflows for zeazdev"
+  default_prompt: "Use the zeazdev repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
